@@ -1,20 +1,28 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-const SESSION_COOKIE = "admin_session";
+const SESSION_COOKIE = 'admin_session';
 
 export async function POST(req: Request) {
-  const { username, password } = await req.json().catch(() => ({ username: "", password: "" }));
+  const { username, password } = await req
+    .json()
+    .catch(() => ({ username: '', password: '' }));
 
-  const ADMIN_USER = process.env.ADMIN_USER ?? "";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "";
-  const AUTH_SECRET = process.env.AUTH_SECRET ?? "";
+  const ADMIN_USER = process.env.ADMIN_USER ?? '';
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
+  const AUTH_SECRET = process.env.AUTH_SECRET ?? '';
 
   if (!ADMIN_USER || !ADMIN_PASSWORD || !AUTH_SECRET) {
-    return NextResponse.json({ ok: false, message: "Server config missing" }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, message: 'Server config missing' },
+      { status: 500 }
+    );
   }
 
   if (username !== ADMIN_USER || password !== ADMIN_PASSWORD) {
-    return NextResponse.json({ ok: false, message: "Bad credentials" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, message: 'Bad credentials' },
+      { status: 401 }
+    );
   }
 
   // session 7 jours
@@ -30,8 +38,8 @@ export async function POST(req: Request) {
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: true, // en local http ça passe quand même souvent, sinon mets conditionnel
-    sameSite: "lax",
-    path: "/",
+    sameSite: 'lax',
+    path: '/',
     expires: new Date(exp),
   });
 
@@ -40,26 +48,25 @@ export async function POST(req: Request) {
 
 function base64UrlEncodeString(str: string) {
   const b64 = btoa(str);
-  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
 async function hmacSha256Base64Url(message: string, secret: string) {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
-    "raw",
+    'raw',
     enc.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
+    { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ["sign"]
+    ['sign']
   );
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(message));
   return base64UrlEncodeBytes(new Uint8Array(sig));
 }
 
 function base64UrlEncodeBytes(bytes: Uint8Array) {
-  let bin = "";
+  let bin = '';
   bytes.forEach((b) => (bin += String.fromCharCode(b)));
   const b64 = btoa(bin);
-  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
-

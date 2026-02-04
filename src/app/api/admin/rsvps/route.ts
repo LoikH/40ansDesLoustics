@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import fs from "node:fs/promises";
-import path from "node:path";
+import { NextResponse } from 'next/server';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
-const DATA_FILE = path.join(process.cwd(), "data", "rsvps.json");
+const DATA_FILE = path.join(process.cwd(), 'data', 'rsvps.json');
 
 type StoredRSVP = {
   id: string;
@@ -20,7 +20,7 @@ type StoredRSVP = {
 
 async function readAll(): Promise<StoredRSVP[]> {
   try {
-    const raw = await fs.readFile(DATA_FILE, "utf-8");
+    const raw = await fs.readFile(DATA_FILE, 'utf-8');
     return JSON.parse(raw) as StoredRSVP[];
   } catch {
     return [];
@@ -29,13 +29,12 @@ async function readAll(): Promise<StoredRSVP[]> {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const attending = url.searchParams.get("attending");
+  const attending = url.searchParams.get('attending');
 
   let items = await readAll();
 
-  if (attending === "yes") items = items.filter((x) => x.attending);
-  if (attending === "no") items = items.filter((x) => !x.attending);
+  if (attending === 'yes') items = items.filter((x) => x.attending);
+  if (attending === 'no') items = items.filter((x) => !x.attending);
 
   return NextResponse.json({ items });
 }
-

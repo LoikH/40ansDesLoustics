@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 
 type StoredRSVP = {
   id: string;
@@ -14,34 +14,35 @@ type StoredRSVP = {
   adultPartner: boolean;
   children: {
     count: number;
-    ageRanges: { "0-3": number; "4-10": number; "11-17": number };
+    ageRanges: { '0-3': number; '4-10': number; '11-17': number };
   };
   message?: string;
 };
 
 function formatKids(children?: {
   count: number;
-  ageRanges?: { "0-3": number; "4-10": number; "11-17": number };
+  ageRanges?: { '0-3': number; '4-10': number; '11-17': number };
 }) {
   const count = children?.count ?? 0;
-  if (count <= 0) return { label: "👶 Aucun", detail: "" };
+  if (count <= 0) return { label: '👶 Aucun', detail: '' };
 
   const r = children?.ageRanges;
   const parts: string[] = [];
 
   if (r) {
-    if ((r["0-3"] ?? 0) > 0) parts.push(`0–3: ${r["0-3"]}`);
-    if ((r["4-10"] ?? 0) > 0) parts.push(`4–10: ${r["4-10"]}`);
-    if ((r["11-17"] ?? 0) > 0) parts.push(`11–17: ${r["11-17"]}`);
+    if ((r['0-3'] ?? 0) > 0) parts.push(`0–3: ${r['0-3']}`);
+    if ((r['4-10'] ?? 0) > 0) parts.push(`4–10: ${r['4-10']}`);
+    if ((r['11-17'] ?? 0) > 0) parts.push(`11–17: ${r['11-17']}`);
   }
 
-  if (parts.length === 0) return { label: `👶 ${count} enfant(s)`, detail: "âge non précisé" };
-  return { label: `👶 ${count} enfant(s)`, detail: parts.join(" · ") };
+  if (parts.length === 0)
+    return { label: `👶 ${count} enfant(s)`, detail: 'âge non précisé' };
+  return { label: `👶 ${count} enfant(s)`, detail: parts.join(' · ') };
 }
 
 export default function AdminPage() {
   const [reloadKey, setReloadKey] = useState(0);
-  const [filter, setFilter] = useState<"tout" | "oui" | "non">("tout");
+  const [filter, setFilter] = useState<'all' | 'yes' | 'no'>('all');
   const [items, setItems] = useState<StoredRSVP[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -54,15 +55,14 @@ export default function AdminPage() {
       setErr(null);
 
       const url =
-        filter === "oui"
-          ? "/api/admin/rsvps?attending=oui"
-          : filter === "non"
-            ? "/api/admin/rsvps?attending=non"
-            : "/api/admin/rsvps";
+        filter === 'oui'
+          ? '/api/admin/rsvps?attending=oui'
+          : filter === 'non'
+            ? '/api/admin/rsvps?attending=non'
+            : '/api/admin/rsvps';
 
-     
-      const res = await fetch(url, { cache: "no-store" });	    
-      if (!res.ok) throw new Error("Fetch admin failed");
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Fetch admin failed');
 
       const json = (await res.json()) as { items: StoredRSVP[] };
       if (!cancelled) setItems(json.items ?? []);
@@ -71,7 +71,7 @@ export default function AdminPage() {
 
     load().catch((e) => {
       if (!cancelled) {
-        setErr(e?.message ?? "Erreur");
+        setErr(e?.message ?? 'Erreur');
         setLoading(false);
       }
     });
@@ -82,9 +82,8 @@ export default function AdminPage() {
   }, [filter, reloadKey]);
 
   const btnBase =
-  "border border-white/15 px-3 py-2 rounded-xl font-extrabold text-xs bg-black/30 hover:bg-white/5 transition";
-  const btnActive = "bg-red-500 border-red-500 text-black hover:bg-red-400";
-
+    'border border-white/15 px-3 py-2 rounded-xl font-extrabold text-xs bg-black/30 hover:bg-white/5 transition';
+  const btnActive = 'bg-red-500 border-red-500 text-black hover:bg-red-400';
 
   const totalPeople = useMemo(() => {
     return items.reduce((acc, x) => {
@@ -97,13 +96,12 @@ export default function AdminPage() {
 
   function refresh() {
     setReloadKey((k) => k + 1);
-  }  
-
-  async function logout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    window.location.href = "/admin/login";
   }
 
+  async function logout() {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin/login';
+  }
 
   return (
     <main className="min-h-screen bg-black text-white px-4 py-10">
@@ -114,26 +112,40 @@ export default function AdminPage() {
               Admin <span className="text-red-500">RSVP</span>
             </h1>
             <p className="mt-2 text-white/70">
-              {loading ? "Chargement..." : `${items.length} réponse(s)`} — total personnes (selon filtre) ≈{" "}
+              {loading ? 'Chargement...' : `${items.length} réponse(s)`} — total
+              personnes (selon filtre) ≈{' '}
               <span className="font-bold text-white">{totalPeople}</span>
             </p>
             {err && <p className="mt-2 text-red-400">{err}</p>}
           </div>
 
           <div className="flex gap-2">
-            <button className={`btn ${filter === "tout" ? "btnActive" : ""}`} onClick={() => setFilter("tout")}>
+            <button
+              className={`btn ${filter === 'all' ? 'btnActive' : ''}`}
+              onClick={() => setFilter('all')}
+            >
               Tout
             </button>
-            <button className={`btn ${filter === "oui" ? "btnActive" : ""}`} onClick={() => setFilter("oui")}>
+            <button
+              className={`btn ${filter === 'yes' ? 'btnActive' : ''}`}
+              onClick={() => setFilter('yes')}
+            >
               Oui
             </button>
-            <button className={`btn ${filter === "non" ? "btnActive" : ""}`} onClick={() => setFilter("non")}>
+            <button
+              className={`btn ${filter === 'no' ? 'btnActive' : ''}`}
+              onClick={() => setFilter('no')}
+            >
               Non
             </button>
-	    <button className={btnBase} onClick={refresh} type="button">
+            <button className={btnBase} onClick={refresh} type="button">
               Refresh
             </button>
-            <button className={`${btnBase} border-red-500/40`} onClick={logout} type="button">
+            <button
+              className={`${btnBase} border-red-500/40`}
+              onClick={logout}
+              type="button"
+            >
               Logout
             </button>
           </div>
@@ -156,30 +168,42 @@ export default function AdminPage() {
                 const adults = 1 + (x.adultPartner ? 1 : 0);
                 const kidsInfo = formatKids(x.children);
                 return (
-                  <tr key={x.id} className="border-b border-white/5 last:border-b-0">
+                  <tr
+                    key={x.id}
+                    className="border-b border-white/5 last:border-b-0"
+                  >
                     <td className="p-3 font-semibold">{x.name}</td>
                     <td className="p-3 text-white/70">
-                      <div>{x.email ?? "-"}</div>
-                      <div>{x.phone ?? "-"}</div>
+                      <div>{x.email ?? '-'}</div>
+                      <div>{x.phone ?? '-'}</div>
                     </td>
                     <td className="p-3">
-                      <span className={`tag ${x.attending ? "tagYes" : "tagNo"}`}>
-                        {x.attending ? "Oui" : "Non"}
+                      <span
+                        className={`tag ${x.attending ? 'tagYes' : 'tagNo'}`}
+                      >
+                        {x.attending ? 'Oui' : 'Non'}
                       </span>
                     </td>
                     <td className="p-3 text-white/70">
-		      <td className="p-3 text-white/70">
-  		        <div>🧑 {adults} adulte(s)</div>
-			  <div>
-			    {kidsInfo.label}
-			    {kidsInfo.detail ? <span className="text-white/50"> — {kidsInfo.detail}</span> : null}
-			  </div>
-			</td>
-		    </td>
-                    <td className="p-3 text-white/60">
-                      {x.updatedAt ? new Date(x.updatedAt).toLocaleString("fr-FR") : "-"}
+                      <td className="p-3 text-white/70">
+                        <div>🧑 {adults} adulte(s)</div>
+                        <div>
+                          {kidsInfo.label}
+                          {kidsInfo.detail ? (
+                            <span className="text-white/50">
+                              {' '}
+                              — {kidsInfo.detail}
+                            </span>
+                          ) : null}
+                        </div>
+                      </td>
                     </td>
-                    <td className="p-3 text-white/70">{x.message ?? ""}</td>
+                    <td className="p-3 text-white/60">
+                      {x.updatedAt
+                        ? new Date(x.updatedAt).toLocaleString('fr-FR')
+                        : '-'}
+                    </td>
+                    <td className="p-3 text-white/70">{x.message ?? ''}</td>
                   </tr>
                 );
               })}
@@ -187,7 +211,9 @@ export default function AdminPage() {
           </table>
 
           {loading && <div className="p-4 text-white/60">Chargement…</div>}
-          {!loading && items.length === 0 && <div className="p-4 text-white/60">Aucune réponse.</div>}
+          {!loading && items.length === 0 && (
+            <div className="p-4 text-white/60">Aucune réponse.</div>
+          )}
         </div>
 
         <style jsx global>{`

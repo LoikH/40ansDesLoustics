@@ -1,27 +1,28 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const SESSION_COOKIE = "admin_session";
+const SESSION_COOKIE = 'admin_session';
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Tout ce qui n'est pas admin => laisse passer
-  if (!pathname.startsWith("/admin") && !pathname.startsWith("/api/admin")) {
+  if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
     return NextResponse.next();
   }
 
   // Autorise la page login + l'endpoint login/logout
   if (
-    pathname === "/admin/login" ||
-    pathname.startsWith("/api/admin/login") ||
-    pathname.startsWith("/api/admin/logout")
+    pathname === '/admin/login' ||
+    pathname.startsWith('/api/admin/login') ||
+    pathname.startsWith('/api/admin/logout')
   ) {
     return NextResponse.next();
   }
 
-  const secret = process.env.AUTH_SECRET ?? "";
-  if (!secret) return NextResponse.json({ error: "AUTH_SECRET missing" }, { status: 500 });
+  const secret = process.env.AUTH_SECRET ?? '';
+  if (!secret)
+    return NextResponse.json({ error: 'AUTH_SECRET missing' }, { status: 500 });
 
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   const ok = token ? await verifySession(token, secret) : false;
@@ -30,18 +31,18 @@ export async function middleware(req: NextRequest) {
 
   // Redirect vers login
   const url = req.nextUrl.clone();
-  url.pathname = "/admin/login";
-  url.searchParams.set("next", pathname);
+  url.pathname = '/admin/login';
+  url.searchParams.set('next', pathname);
   return NextResponse.redirect(url);
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ['/admin/:path*', '/api/admin/:path*'],
 };
 
 async function verifySession(token: string, secret: string) {
   // token = base64url(payload).base64url(sig)
-  const parts = token.split(".");
+  const parts = token.split('.');
   if (parts.length !== 2) return false;
 
   const [payloadB64, sigB64] = parts;
@@ -64,7 +65,9 @@ async function verifySession(token: string, secret: string) {
 
 function safeBase64UrlDecode(b64url: string) {
   try {
-    const b64 = b64url.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((b64url.length + 3) % 4);
+    const b64 =
+      b64url.replace(/-/g, '+').replace(/_/g, '/') +
+      '==='.slice((b64url.length + 3) % 4);
     return atob(b64);
   } catch {
     return null;
@@ -74,21 +77,21 @@ function safeBase64UrlDecode(b64url: string) {
 async function hmacSha256Base64Url(message: string, secret: string) {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
-    "raw",
+    'raw',
     enc.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
+    { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ["sign"]
+    ['sign']
   );
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(message));
   return base64UrlEncode(new Uint8Array(sig));
 }
 
 function base64UrlEncode(bytes: Uint8Array) {
-  let bin = "";
+  let bin = '';
   bytes.forEach((b) => (bin += String.fromCharCode(b)));
   const b64 = btoa(bin);
-  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
 // mini timing-safe (Edge-friendly)
@@ -98,4 +101,3 @@ function timingSafeEqual(a: string, b: string) {
   for (let i = 0; i < a.length; i++) out |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return out === 0;
 }
-

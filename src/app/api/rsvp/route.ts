@@ -1,24 +1,24 @@
-import { NextResponse } from "next/server";
-import fs from "node:fs/promises";
-import path from "node:path";
-import { rsvpSchema } from "@/lib/rsvpSchema";
+import { NextResponse } from 'next/server';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { rsvpSchema } from '@/lib/rsvpSchema';
 
-const DATA_FILE = path.join(process.cwd(), "data", "rsvps.json");
-import { VALID_CODES } from "@/lib/inviteCodes";
+const DATA_FILE = path.join(process.cwd(), 'data', 'rsvps.json');
+import { VALID_CODES } from '@/lib/inviteCodes';
 
 function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 function normalizePhone(phone: string) {
   const trimmed = phone.trim();
-  const hasPlus = trimmed.startsWith("+");
-  const digits = trimmed.replace(/[^\d]/g, "");
-  return (hasPlus ? "+" : "") + digits;
+  const hasPlus = trimmed.startsWith('+');
+  const digits = trimmed.replace(/[^\d]/g, '');
+  return (hasPlus ? '+' : '') + digits;
 }
 
 async function readAll() {
   try {
-    return JSON.parse(await fs.readFile(DATA_FILE, "utf-8"));
+    return JSON.parse(await fs.readFile(DATA_FILE, 'utf-8'));
   } catch {
     return [];
   }
@@ -26,7 +26,7 @@ async function readAll() {
 
 async function writeAll(data: any[]) {
   await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
-  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
 export async function POST(req: Request) {
@@ -42,16 +42,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false }, { status: 401 });
     }
 
-    const email = input.email ? normalizeEmail(input.email) : "";
-    const phone = input.phone ? normalizePhone(input.phone) : "";
+    const email = input.email ? normalizeEmail(input.email) : '';
+    const phone = input.phone ? normalizePhone(input.phone) : '';
     if (!email && !phone) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
 
     const all = await readAll();
     const idx = all.findIndex((x: any) => {
-      const xe = x.email ? normalizeEmail(x.email) : "";
-      const xp = x.phone ? normalizePhone(x.phone) : "";
+      const xe = x.email ? normalizeEmail(x.email) : '';
+      const xp = x.phone ? normalizePhone(x.phone) : '';
       return (email && xe === email) || (phone && xp === phone);
     });
 
@@ -70,7 +70,10 @@ export async function POST(req: Request) {
 
     await writeAll(all);
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      message: 'Réponse enregistrée ✅ Merci !',
+    });
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 });
   }

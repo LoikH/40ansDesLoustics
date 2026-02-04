@@ -2,6 +2,26 @@
   {
     "code": "40ANS-FAMILLE-0001",
     "name": "François-Xavier DESMIDT",
+    "email": "gregorymichel@gmail.com",
+    "phone": "0687981547",
+    "attending": false,
+    "adultPartner": false,
+    "children": {
+      "count": 0,
+      "ageRanges": {
+        "0-3": 0,
+        "4-10": 0,
+        "11-17": 0
+      }
+    },
+    "message": "",
+    "id": "c6434d01-7d33-4b46-8334-2d829e6ce47e",
+    "createdAt": "2026-02-04T19:24:55.376Z",
+    "updatedAt": "2026-02-04T19:24:55.376Z"
+  },
+  {
+    "code": "40ANS-FAMILLE-0001",
+    "name": "François-Xavier DESMIDT",
     "email": "guy@gmail.com",
     "phone": "0682981549",
     "attending": true,
@@ -45,18 +65,18 @@
     "email": "desmidtfx@gmail.com",
     "phone": "0682981547",
     "attending": true,
-    "adultPartner": true,
+    "adultPartner": false,
     "children": {
       "count": 1,
       "ageRanges": {
-        "0-3": 1,
-        "4-10": 0,
-        "11-17": 0
+        "0-3": 2,
+        "4-10": 3,
+        "11-17": 2
       }
     },
-    "message": "un petit mot",
+    "message": "Famille nombreuse!!!",
     "id": "6dc97a11-c7c9-4ee2-a2f2-9dd782795f8e",
     "createdAt": "2026-02-04T15:28:20.168Z",
-    "updatedAt": "2026-02-04T15:34:01.242Z"
+    "updatedAt": "2026-02-04T19:24:33.922Z"
   }
 ]

@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginClient() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const sp = useSearchParams();
   const router = useRouter();
-  const next = sp.get("next") ?? "/admin";
+  const next = sp.get('next') ?? '/admin';
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
     setLoading(true);
 
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
 
     setLoading(false);
 
     if (!res.ok) {
-      setErr("Mauvais identifiants 😬");
+      setErr('Mauvais identifiants 😬');
       return;
     }
 
@@ -62,7 +62,7 @@ export default function LoginClient() {
           disabled={loading}
           className="w-full rounded-xl bg-red-500 py-3 font-black text-black disabled:opacity-60"
         >
-          {loading ? "..." : "Se connecter"}
+          {loading ? '...' : 'Se connecter'}
         </button>
 
         {err && <p className="text-red-400">{err}</p>}
@@ -70,4 +70,3 @@ export default function LoginClient() {
     </main>
   );
 }
-

@@ -6,6 +6,7 @@ PATCH FINAL – RSVP 40 ANS
 - Formulaire caché sans code
 
 INSTALL :
-1) unzip à la racine
-2) npm i zod
-3) npm run dev
+
+1. unzip à la racine
+2. npm i zod
+3. npm run dev
