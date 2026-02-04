@@ -2,6 +2,46 @@
   {
     "code": "40ANS-FAMILLE-0001",
     "name": "François-Xavier DESMIDT",
+    "email": "guy@gmail.com",
+    "phone": "0682981549",
+    "attending": true,
+    "adultPartner": false,
+    "children": {
+      "count": 3,
+      "ageRanges": {
+        "0-3": 1,
+        "4-10": 1,
+        "11-17": 1
+      }
+    },
+    "message": "COUCOU",
+    "id": "020666f6-4450-4651-81a6-0b1ca0d8ac42",
+    "createdAt": "2026-02-04T15:50:00.948Z",
+    "updatedAt": "2026-02-04T15:50:00.948Z"
+  },
+  {
+    "code": "40ANS-FAMILLE-0001",
+    "name": "François-Xavier DESMIDT",
+    "email": "michel@gmail.com",
+    "phone": "0682981548",
+    "attending": true,
+    "adultPartner": true,
+    "children": {
+      "count": 3,
+      "ageRanges": {
+        "0-3": 1,
+        "4-10": 1,
+        "11-17": 1
+      }
+    },
+    "message": "COUCOU",
+    "id": "9ed31a76-9d22-4377-a78a-44c0ef59f8dc",
+    "createdAt": "2026-02-04T15:49:41.425Z",
+    "updatedAt": "2026-02-04T15:49:41.425Z"
+  },
+  {
+    "code": "40ANS-FAMILLE-0001",
+    "name": "François-Xavier DESMIDT",
     "email": "desmidtfx@gmail.com",
     "phone": "0682981547",
     "attending": true,
