@@ -39,19 +39,9 @@ function formatKids(children?: {
   return { label: `👶 ${count} enfant(s)`, detail: parts.join(" · ") };
 }
 
-async function logout() {
-  await fetch("/api/admin/logout", { method: "POST" });
-  window.location.href = "/admin/login";
-}
-
-function refresh() {
-  // force re-run du useEffect via un hack simple
-  setFilter((f) => f);
-}
-
 export default function AdminPage() {
   const [reloadKey, setReloadKey] = useState(0);
-  const [filter, setFilter] = useState<"tout" | "yes" | "no">("tout");
+  const [filter, setFilter] = useState<"tout" | "oui" | "non">("tout");
   const [items, setItems] = useState<StoredRSVP[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -64,10 +54,10 @@ export default function AdminPage() {
       setErr(null);
 
       const url =
-        filter === "yes"
-          ? "/api/admin/rsvps?attending=yes"
-          : filter === "no"
-            ? "/api/admin/rsvps?attending=no"
+        filter === "oui"
+          ? "/api/admin/rsvps?attending=oui"
+          : filter === "non"
+            ? "/api/admin/rsvps?attending=non"
             : "/api/admin/rsvps";
 
      
@@ -105,6 +95,16 @@ export default function AdminPage() {
     }, 0);
   }, [items]);
 
+  function refresh() {
+    setReloadKey((k) => k + 1);
+  }  
+
+  async function logout() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    window.location.href = "/admin/login";
+  }
+
+
   return (
     <main className="min-h-screen bg-black text-white px-4 py-10">
       <div className="mx-auto max-w-5xl">
@@ -121,13 +121,13 @@ export default function AdminPage() {
           </div>
 
           <div className="flex gap-2">
-            <button className={`btn ${filter === "all" ? "btnActive" : ""}`} onClick={() => setFilter("all")}>
+            <button className={`btn ${filter === "tout" ? "btnActive" : ""}`} onClick={() => setFilter("tout")}>
               Tout
             </button>
-            <button className={`btn ${filter === "yes" ? "btnActive" : ""}`} onClick={() => setFilter("yes")}>
+            <button className={`btn ${filter === "oui" ? "btnActive" : ""}`} onClick={() => setFilter("oui")}>
               Oui
             </button>
-            <button className={`btn ${filter === "no" ? "btnActive" : ""}`} onClick={() => setFilter("no")}>
+            <button className={`btn ${filter === "non" ? "btnActive" : ""}`} onClick={() => setFilter("non")}>
               Non
             </button>
 	    <button className={btnBase} onClick={refresh} type="button">
