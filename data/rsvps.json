@@ -87,9 +87,9 @@
     "attending": true,
     "adultPartner": false,
     "children": {
-      "count": 3,
+      "count": 2,
       "ageRanges": {
-        "0-3": 1,
+        "0-3": 0,
         "4-10": 1,
         "11-17": 1
       }
@@ -97,6 +97,6 @@
     "message": "",
     "id": "6dc97a11-c7c9-4ee2-a2f2-9dd782795f8e",
     "createdAt": "2026-02-04T15:28:20.168Z",
-    "updatedAt": "2026-02-04T20:23:26.007Z"
+    "updatedAt": "2026-02-04T20:32:43.670Z"
   }
 ]
