@@ -39,8 +39,19 @@ function formatKids(children?: {
   return { label: `👶 ${count} enfant(s)`, detail: parts.join(" · ") };
 }
 
+async function logout() {
+  await fetch("/api/admin/logout", { method: "POST" });
+  window.location.href = "/admin/login";
+}
+
+function refresh() {
+  // force re-run du useEffect via un hack simple
+  setFilter((f) => f);
+}
+
 export default function AdminPage() {
-  const [filter, setFilter] = useState<"all" | "yes" | "no">("all");
+  const [reloadKey, setReloadKey] = useState(0);
+  const [filter, setFilter] = useState<"tout" | "yes" | "no">("tout");
   const [items, setItems] = useState<StoredRSVP[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -59,12 +70,8 @@ export default function AdminPage() {
             ? "/api/admin/rsvps?attending=no"
             : "/api/admin/rsvps";
 
-      const res = await fetch(url, {
-  cache: "no-store",
-  headers: {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_ADMIN_TOKEN}`,
-  },
-});
+     
+      const res = await fetch(url, { cache: "no-store" });	    
       if (!res.ok) throw new Error("Fetch admin failed");
 
       const json = (await res.json()) as { items: StoredRSVP[] };
@@ -82,7 +89,12 @@ export default function AdminPage() {
     return () => {
       cancelled = true;
     };
-  }, [filter]);
+  }, [filter, reloadKey]);
+
+  const btnBase =
+  "border border-white/15 px-3 py-2 rounded-xl font-extrabold text-xs bg-black/30 hover:bg-white/5 transition";
+  const btnActive = "bg-red-500 border-red-500 text-black hover:bg-red-400";
+
 
   const totalPeople = useMemo(() => {
     return items.reduce((acc, x) => {
@@ -117,6 +129,12 @@ export default function AdminPage() {
             </button>
             <button className={`btn ${filter === "no" ? "btnActive" : ""}`} onClick={() => setFilter("no")}>
               Non
+            </button>
+	    <button className={btnBase} onClick={refresh} type="button">
+              Refresh
+            </button>
+            <button className={`${btnBase} border-red-500/40`} onClick={logout} type="button">
+              Logout
             </button>
           </div>
         </div>

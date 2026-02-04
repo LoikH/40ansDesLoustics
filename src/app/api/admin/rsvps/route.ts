@@ -3,7 +3,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const DATA_FILE = path.join(process.cwd(), "data", "rsvps.json");
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? "";
 
 type StoredRSVP = {
   id: string;
@@ -29,19 +28,14 @@ async function readAll(): Promise<StoredRSVP[]> {
 }
 
 export async function GET(req: Request) {
-  const auth = req.headers.get("authorization") ?? "";
-
-  if (!ADMIN_TOKEN || auth !== `Bearer ${ADMIN_TOKEN}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const url = new URL(req.url);
   const attending = url.searchParams.get("attending");
 
-  let data = await readAll();
+  let items = await readAll();
 
-  if (attending === "yes") data = data.filter((x) => x.attending);
-  if (attending === "no") data = data.filter((x) => !x.attending);
+  if (attending === "yes") items = items.filter((x) => x.attending);
+  if (attending === "no") items = items.filter((x) => !x.attending);
 
-  return NextResponse.json({ items: data });
+  return NextResponse.json({ items });
 }
+
