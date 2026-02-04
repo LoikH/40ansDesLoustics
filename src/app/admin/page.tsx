@@ -232,7 +232,7 @@ export default function AdminPage() {
               {(items ?? []).map((x) => {
                 const adults = 1 + (x.adultPartner ? 1 : 0);
                 const kids = kidsCountFromAges(x.children);
-		const kidsInfo = formatKids(x.children);
+                const kidsInfo = formatKids(x.children);
                 return (
                   <tr
                     key={x.id}

@@ -65,8 +65,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const email = normalizedInput.email ? normalizeEmail(input.email) : '';
-    const phone = normalizedInput.phone ? normalizePhone(input.phone) : '';
+    const email = normalizedInput.email
+      ? normalizeEmail(normalizedInput.email)
+      : '';
+    const phone = normalizedInput.phone
+      ? normalizePhone(normalizedInput.phone)
+      : '';
     if (!email && !phone) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
