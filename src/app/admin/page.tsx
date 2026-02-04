@@ -55,10 +55,10 @@ export default function AdminPage() {
       setErr(null);
 
       const url =
-        filter === 'oui'
-          ? '/api/admin/rsvps?attending=oui'
-          : filter === 'non'
-            ? '/api/admin/rsvps?attending=non'
+        filter === 'yes'
+          ? '/api/admin/rsvps?attending=yes'
+          : filter === 'no'
+            ? '/api/admin/rsvps?attending=no'
             : '/api/admin/rsvps';
 
       const res = await fetch(url, { cache: 'no-store' });
@@ -85,13 +85,37 @@ export default function AdminPage() {
     'border border-white/15 px-3 py-2 rounded-xl font-extrabold text-xs bg-black/30 hover:bg-white/5 transition';
   const btnActive = 'bg-red-500 border-red-500 text-black hover:bg-red-400';
 
-  const totalPeople = useMemo(() => {
-    return items.reduce((acc, x) => {
-      if (!x.attending) return acc;
-      const adults = 1 + (x.adultPartner ? 1 : 0);
-      const kids = x.children?.count ?? 0;
-      return acc + adults + kids;
-    }, 0);
+  const stats = useMemo(() => {
+    return items.reduce(
+      (acc, x) => {
+        if (!x.attending) return acc;
+
+        acc.adults += 1 + (x.adultPartner ? 1 : 0);
+
+        const kids = x.children?.count ?? 0;
+        acc.kidsTotal += kids;
+
+        const ages = x.children?.ageRanges;
+        if (ages) {
+          acc.kidsByAge['0-3'] += ages['0-3'] ?? 0;
+          acc.kidsByAge['4-10'] += ages['4-10'] ?? 0;
+          acc.kidsByAge['11-17'] += ages['11-17'] ?? 0;
+        }
+
+        acc.totalPeople += 1 + (x.adultPartner ? 1 : 0) + kids;
+
+        return acc;
+      },
+      {
+        totalPeople: 0,
+        adults: 0,
+        kidsTotal: 0,
+        kidsByAge: { '0-3': 0, '4-10': 0, '11-17': 0 } as Record<
+          '0-3' | '4-10' | '11-17',
+          number
+        >,
+      }
+    );
   }, [items]);
 
   function refresh() {
@@ -111,11 +135,41 @@ export default function AdminPage() {
             <h1 className="text-3xl font-extrabold">
               Admin <span className="text-red-500">RSVP</span>
             </h1>
-            <p className="mt-2 text-white/70">
-              {loading ? 'Chargement...' : `${items.length} réponse(s)`} — total
-              personnes (selon filtre) ≈{' '}
-              <span className="font-bold text-white">{totalPeople}</span>
-            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard
+                label="Total personnes"
+                value={stats.totalPeople}
+                accent
+              />
+              <StatCard label="Adultes" value={stats.adults} />
+              <StatCard label="Enfants" value={stats.kidsTotal} />
+              <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                <div className="text-xs font-bold text-white/60">
+                  Enfants par tranche
+                </div>
+                <div className="mt-2 space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-white/70">0–3</span>
+                    <span className="font-extrabold">
+                      {stats.kidsByAge['0-3']}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/70">4–10</span>
+                    <span className="font-extrabold">
+                      {stats.kidsByAge['4-10']}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/70">11–17</span>
+                    <span className="font-extrabold">
+                      {stats.kidsByAge['11-17']}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {err && <p className="mt-2 text-red-400">{err}</p>}
           </div>
 
@@ -247,5 +301,25 @@ export default function AdminPage() {
         `}</style>
       </div>
     </main>
+  );
+}
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+      <div className="text-xs font-bold text-white/60">{label}</div>
+      <div
+        className={`mt-2 text-3xl font-extrabold ${accent ? 'text-red-500' : ''}`}
+      >
+        {value}
+      </div>
+    </div>
   );
 }
