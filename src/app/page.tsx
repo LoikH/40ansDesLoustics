@@ -282,18 +282,6 @@ export default function Home() {
 
                   {childrenCount > 0 && (
                     <div className="pt-2 space-y-3">
-                      <Field label="Nombre d’enfants">
-                        <input
-                          type="number"
-                          min={1}
-                          max={10}
-                          value={childrenCount}
-                          onChange={(e) =>
-                            setChildrenCount(Number(e.target.value))
-                          }
-                          className="input"
-                        />
-                      </Field>
                       <Field label="Tranches d’âge">
                         {(['0-3', '4-10', '11-17'] as const).map((k) => (
                           <div key={k} className="flex items-center gap-3">
@@ -324,7 +312,7 @@ export default function Home() {
                   name="message"
                   rows={3}
                   className="input"
-                  placeholder="Un petit mot ?"
+                  placeholder="Un petit mot ? En un mot, mo, en 2 mots, momo"
                 />
               </Field>
 

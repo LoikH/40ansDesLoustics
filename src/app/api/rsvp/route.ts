@@ -38,12 +38,35 @@ export async function POST(req: Request) {
     }
 
     const input = parsed.data;
-    if (!VALID_CODES.has(input.code)) {
-      return NextResponse.json({ ok: false }, { status: 401 });
+    // ✅ Normalisation enfants: count = somme des tranches d'âge
+    const ages = input.children?.ageRanges ?? {
+      '0-3': 0,
+      '4-10': 0,
+      '11-17': 0,
+    };
+    const kidsCount =
+      (ages['0-3'] ?? 0) + (ages['4-10'] ?? 0) + (ages['11-17'] ?? 0);
+
+    // si pas présent, on force famille à 0
+    const attending = Boolean(input.attending);
+
+    const normalizedInput = {
+      ...input,
+      adultPartner: attending ? Boolean(input.adultPartner) : false,
+      children: attending
+        ? { count: kidsCount, ageRanges: ages }
+        : { count: 0, ageRanges: { '0-3': 0, '4-10': 0, '11-17': 0 } },
+    };
+
+    if (!VALID_CODES.has(normalizedInput.code)) {
+      return NextResponse.json(
+        { ok: false, message: 'Code d’invitation invalide 😬' },
+        { status: 403 }
+      );
     }
 
-    const email = input.email ? normalizeEmail(input.email) : '';
-    const phone = input.phone ? normalizePhone(input.phone) : '';
+    const email = normalizedInput.email ? normalizeEmail(input.email) : '';
+    const phone = normalizedInput.phone ? normalizePhone(input.phone) : '';
     if (!email && !phone) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
@@ -57,7 +80,7 @@ export async function POST(req: Request) {
 
     const now = new Date().toISOString();
     const entry = {
-      ...input,
+      ...normalizedInput,
       email: email || undefined,
       phone: phone || undefined,
       id: idx >= 0 ? all[idx].id : crypto.randomUUID(),

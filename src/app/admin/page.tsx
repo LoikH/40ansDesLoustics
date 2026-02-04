@@ -19,6 +19,13 @@ type StoredRSVP = {
   message?: string;
 };
 
+function kidsCountFromAges(children?: {
+  ageRanges?: { '0-3': number; '4-10': number; '11-17': number };
+}) {
+  const a = children?.ageRanges;
+  return (a?.['0-3'] ?? 0) + (a?.['4-10'] ?? 0) + (a?.['11-17'] ?? 0);
+}
+
 function formatKids(children?: {
   count: number;
   ageRanges?: { '0-3': number; '4-10': number; '11-17': number };
@@ -92,14 +99,18 @@ export default function AdminPage() {
 
         acc.adults += 1 + (x.adultPartner ? 1 : 0);
 
-        const kids = x.children?.count ?? 0;
+        const ageRanges = x.children?.ageRanges;
+        const kids =
+          (ageRanges?.['0-3'] ?? 0) +
+          (ageRanges?.['4-10'] ?? 0) +
+          (ageRanges?.['11-17'] ?? 0);
+
         acc.kidsTotal += kids;
 
-        const ages = x.children?.ageRanges;
-        if (ages) {
-          acc.kidsByAge['0-3'] += ages['0-3'] ?? 0;
-          acc.kidsByAge['4-10'] += ages['4-10'] ?? 0;
-          acc.kidsByAge['11-17'] += ages['11-17'] ?? 0;
+        if (ageRanges) {
+          acc.kidsByAge['0-3'] += ageRanges['0-3'] ?? 0;
+          acc.kidsByAge['4-10'] += ageRanges['4-10'] ?? 0;
+          acc.kidsByAge['11-17'] += ageRanges['11-17'] ?? 0;
         }
 
         acc.totalPeople += 1 + (x.adultPartner ? 1 : 0) + kids;
@@ -220,7 +231,8 @@ export default function AdminPage() {
             <tbody>
               {(items ?? []).map((x) => {
                 const adults = 1 + (x.adultPartner ? 1 : 0);
-                const kidsInfo = formatKids(x.children);
+                const kids = kidsCountFromAges(x.children);
+		const kidsInfo = formatKids(x.children);
                 return (
                   <tr
                     key={x.id}
@@ -269,36 +281,6 @@ export default function AdminPage() {
             <div className="p-4 text-white/60">Aucune réponse.</div>
           )}
         </div>
-
-        <style jsx global>{`
-          .btn {
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 10px 12px;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.35);
-          }
-          .btnActive {
-            background: #ff2b2b;
-            border-color: #ff2b2b;
-            color: #000;
-          }
-          .tag {
-            border-radius: 10px;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: 900;
-          }
-          .tagYes {
-            background: #ff2b2b;
-            color: #000;
-          }
-          .tagNo {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-          }
-        `}</style>
       </div>
     </main>
   );
